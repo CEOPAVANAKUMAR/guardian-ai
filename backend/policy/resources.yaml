@@ -1,0 +1,40 @@
+# GuardianAI Resource Classification Matrix
+version: "1.0"
+
+classifications:
+  CONFIDENTIAL_SECRET:
+    risk: "CRITICAL"
+    resources:
+      - "fake_secrets.env"
+      - ".env"
+      - "credentials"
+      - "api_keys"
+      - "token"
+      - "private_key"
+      - "admin_passwords"
+
+  HIGH_IMPACT_DATA:
+    risk: "HIGH"
+    resources:
+      - "customers"
+      - "users"
+      - "financial_accounts"
+      - "payroll"
+
+  OPERATIONAL_DATA:
+    risk: "LOW"
+    resources:
+      - "sales"
+      - "invoices"
+      - "products"
+      - "catalog"
+      - "clean_invoice.pdf"
+      - "poisoned_invoice.pdf"
+
+  EXTERNAL_EGRESS:
+    risk: "CRITICAL"
+    resources:
+      - "attacker@example.invalid"
+      - "https://attacker.invalid"
+      - "external_api"
+      - "smtp_gateway"

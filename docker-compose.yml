@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - GUARDIAN_HOST=0.0.0.0
+      - GUARDIAN_PORT=8000
+      - GUARDIAN_ENABLED=true
+      - GUARDIAN_SECRET_KEY=GUARDIAN_DEV_HMAC_SECRET_KEY_DO_NOT_USE_IN_PROD
+      - CAPABILITY_TOKEN_SECRET=GUARDIAN_DEV_CAPABILITY_SIGNING_SECRET_KEY
+      - DEMO_API_KEY=GUARDIAN_FAKE_SECRET_12345
+    volumes:
+      - ./data:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend

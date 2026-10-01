@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: guardian-ai
+    env: python
+    buildCommand: "npm --prefix frontend install && npm --prefix frontend run build && pip install -r requirements.txt && python scripts/seed_db.py && python scripts/generate_pdfs.py"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: GUARDIAN_ENABLED
+        value: "true"
+      - key: GUARDIAN_SECRET_KEY
+        generateValue: true
+      - key: CAPABILITY_TOKEN_SECRET
+        generateValue: true
+      - key: AUTH_SECRET_KEY
+        generateValue: true
+      - key: DEMO_API_KEY
+        value: "GUARDIAN_FAKE_SECRET_12345"
+      - key: GUARDIAN_SMTP_EMAIL
+        sync: false
+      - key: GUARDIAN_SMTP_APP_PASSWORD
+        sync: false
+      - key: DEFAULT_NOTIFICATION_EMAIL
+        sync: false

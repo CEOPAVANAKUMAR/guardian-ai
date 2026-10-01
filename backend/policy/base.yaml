@@ -1,0 +1,74 @@
+# GuardianAI Base Security Policy Configuration
+version: "1.0"
+
+default_decision: "DENY"
+
+rules:
+  - id: "POL-001"
+    name: "System Command Execution Block"
+    action_type: "SYSTEM_COMMAND"
+    decision: "DENY"
+    risk_level: "CRITICAL"
+    reason: "Arbitrary system command execution is unconditionally prohibited for autonomous agents."
+
+  - id: "POL-002"
+    name: "Unclassified Secret Access Block"
+    action_type: "READ_SECRET"
+    condition: "not_manifest_secret_allowed"
+    decision: "DENY"
+    risk_level: "CRITICAL"
+    reason: "Task manifest has no secret access"
+
+  - id: "POL-003"
+    name: "Tainted Context Secret Access Block"
+    action_type: "READ_SECRET"
+    condition: "session_tainted"
+    decision: "DENY"
+    risk_level: "CRITICAL"
+    reason: "Session contains EXTERNAL_UNTRUSTED context"
+
+  - id: "POL-004"
+    name: "External Exfiltration Block"
+    action_type: "EXTERNAL_SEND"
+    condition: "always"
+    decision: "DENY"
+    risk_level: "HIGH"
+    reason: "External data egress is restricted under autonomous policy"
+
+  - id: "POL-005"
+    name: "Database Destruction Escalation"
+    action_type: "DB_DELETE"
+    condition: "scoped_with_where"
+    decision: "ESCALATE"
+    risk_level: "HIGH"
+    reason: "Action impact requires human approval"
+
+  - id: "POL-006"
+    name: "Database Destruction Unscoped Block"
+    action_type: "DB_DELETE"
+    condition: "unscoped_no_where"
+    decision: "DENY"
+    risk_level: "CRITICAL"
+    reason: "Destructive or unsafe SQL statement detected: Unscoped DELETE without WHERE clause"
+
+  - id: "POL-007"
+    name: "In-Scope Read Operations"
+    action_type: "DB_READ"
+    condition: "in_scope"
+    decision: "ALLOW_WITH_CONSTRAINTS"
+    risk_level: "LOW"
+    constraints:
+      max_limit: 100
+      read_only: true
+    reason: "Action verified against task scope and security policies"
+
+  - id: "POL-008"
+    name: "Ingest Document Untrusted Provenance"
+    action_type: "READ_DOCUMENT"
+    condition: "in_scope"
+    decision: "ALLOW_WITH_CONSTRAINTS"
+    risk_level: "LOW"
+    constraints:
+      max_bytes: 10485760
+      mark_session_tainted: true
+    reason: "Document read permitted under sandboxed ingestion with session taint"
